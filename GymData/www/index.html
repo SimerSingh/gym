@@ -8,18 +8,36 @@
     <link href="jqm/css/jquery.mobile.structure-1.4.5.min.css" rel="stylesheet" />   
     <script src="jq/jquery-2.1.4.min.js"></script>
     <script src="jqm/js/jquery.mobile-1.4.5.min.js"></script>
-    <script>                
-        function captureSuccess(mediaFiles) {
-            navigator.notification.alert('Success taking picture:');
-        }        
+    <script>    
+     var pictureSource;   // picture source
+    var destinationType; // sets the format of returned value  
+    document.addEventListener("deviceready",onDeviceReady,false);
+
+    function onDeviceReady() {
+        pictureSource=navigator.camera.PictureSourceType;
+        destinationType=navigator.camera.DestinationType;
+    } 
+
+     function capturePhoto() {
+      // Take picture using device camera and retrieve image as base64-encoded string
+      navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 50,destinationType:Camera.DestinationType.DATA_URL });
+    }
+
+
+       function onPhotoDataSuccess(imageData) {      
+        var smallImage = document.getElementById('picResult');      
+        smallImage.style.display = 'block';      
+        smallImage.src = "data:image/jpeg;base64," + imageData;
+        }
+
+        function onFail(message) {
+          alert('Failed because: ' + message);
+        }
         function captureError(mediaFiles) {
             navigator.notification.alert('Error taking picture: ' + error.code);
         }
-        $(document).bind("deviceready",function () {
-            $("#takePhotoButton").bind("tap", function() {
-                navigator.device.capture.captureImage(captureSuccess, captureError, {limit: 1});
-            });
-        });
+       
+
         </script>
 </head>
 
@@ -35,11 +53,10 @@
             <p class="mc-top-margin-1-5"><b>Don't have an account?</b></p>
             <a href="sign-up.html" class="ui-btn ui-btn-b ui-corner-all">Sign Up</a>
             <p></p>
-            <div data-role="content">             
-                Welcome to the jQuery Mobile Demo App for Drupal!             
-                <p/>             
-                <a id="takePhotoButton" data-role="button">Take Photo</a>         
-            </div>
+            <button onclick="capturePhoto();">Capture Photo</button> <br>
+
+            <img id="picResult" style="width:60px;height:60px;"/>
+           
 
         </div><!-- /content -->
     </div><!-- /page -->
